@@ -1,21 +1,32 @@
 defmodule Todo.Task do
-  use Ecto.Schema
-  import Ecto.Changeset
+    alias Todo.Schema.Task
 
-  schema "tasks" do
-    field :title, :string
-    field :description, :string
-    field :due_date, :utc_datetime
-    field :priority, :string, default: "low"
-    field :labels, {:array, :string}
-    field :status, :string, default: "open"
-    field :is_recurring?, :boolean, default: false
-  end
+    def create(%{title: title, description: description, due_date: due} = params) do
+        Task.create(params)
+    end
 
-  def new_changeset(task, params \\ %{}) do
-    task
-    |> cast(params, [:title, :description, :due_date, :priority, :labels, :status, :is_recurring?])
-    |> validate_required([:title, :description, :due_date])
-    |> unique_constraint(:title)
-  end
+    def get(task), do: Task.get(task)
+
+    def list(), do: Task.get_all()
+
+    def sort_list(tasks, col, :asc) when is_atom(col) do
+      Enum.sort_by(tasks, col, &>=/2)
+    end
+
+    def sort_list(tasks, col, :desc) when col in [:priority, :due_date] do
+      Enum.sort_by(tasks, col, &<=/2)
+    end
+
+    def list_by_priority(priority) do
+       Task.get_by_priority(priority)
+    end
+
+    def list_by_label(label) do
+      Task.get_by_label(label)
+    end
+
+    # view a task
+    # update
+    # delete
+    # mark complete
 end

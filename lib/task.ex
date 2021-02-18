@@ -1,41 +1,64 @@
 defmodule Todo.Task do
-    alias Todo.Schema.Task
+  use Ecto.Schema
+  import Ecto.Changeset
+  import Ecto.Query
+  alias Todo.Repo
 
-    @priorities %{"low" => 0, "medium" => 1, "high" => 2}
+  schema "tasks" do
+    field :title, :string
+    field :description, :string
+    field :due_date, :utc_datetime
+    field :priority, :string, default: "low"
+    field :labels, {:array, :string}
+    field :status, :string, default: "open"
+    field :is_recurring?, :boolean, default: false
+    field :inserted_at, :utc_datetime
+    field :updated_at, :utc_datetime
+  end
 
-    def create(%{title: _title, description: _description, due_date: _due} = params) do
-        Task.create(params)
+  def create_changeset(task, params \\ %{}) do
+    task
+    |> cast(params, [:title, :description, :due_date, :priority, :labels, :status, :is_recurring?])
+    |> validate_required([:title, :description, :due_date])
+    |> unique_constraint(:title)
+  end
+
+  def create(params) do
+    __MODULE__
+    |> create_changeset(params)
+    |> Repo.insert()
+  end
+
+  def get_all(), do: Repo.all(__MODULE__)
+
+  def get(id) when is_integer(id), do: Repo.get_by(__MODULE__, id: id)
+
+  def get_by_priority(priority) do
+    __MODULE__
+    |> where([t], t.priority == ^priority)
+    |> order_by([t], [desc: t.due_date])
+    |> Repo.all()
+  end
+
+  def get_by_label(label) when is_binary(label), do: get_by_label([label])
+
+  def get_by_label(labels) when is_list(labels) do
+    __MODULE__
+    |> where([t], fragment("? @> ?", t.labels, ^labels))
+    |> order_by([t], [desc: t.due_date])
+    |> Repo.all()
+  end
+
+  def update(%{id: id}, changes) do
+    {:ok, task} = get(id)
+    task = Ecto.Changeset.change(task, changes)
+    case Repo.update task do
+      {:error, changeset} -> {:error, changeset.errors}
+      {:ok, _} = success -> success
     end
+  end
 
-    def get(task), do: Task.get(task)
-
-    def list(), do: Task.get_all()
-
-    def sort_list(tasks, :due_date, order) when order in [:desc, :asc] do
-      Enum.sort_by(tasks, &(&1.due_date), {order, Date})
-    end
-
-    def sort_list(tasks, :priority, order) when order in [:desc, :asc] do
-      Enum.sort_by(tasks, &(sorter(&1.priority)), order)
-    end
-
-    def list_by_priority(priority) do
-       Task.get_by_priority(priority)
-    end
-
-    def list_by_label(label) do
-      Task.get_by_label(label)
-    end
-
-    def update(task, change_fields) do
-      Task.update(task, change_fields)
-    end
-
-    def delete(task), do: Task.delete(task)
-
-    defp sorter(priority) do
-      Map.get(@priorities, priority)
-    end
-
-    # mark complete
+  def delete(%{id: id}) do
+    Repo.delete(__MODULE__, id)
+  end
 end

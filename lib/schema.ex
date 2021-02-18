@@ -2,6 +2,7 @@ defmodule Todo.Schema.Task do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
+  alias Todo.Repo
 
   schema "tasks" do
     field :title, :string
@@ -11,6 +12,8 @@ defmodule Todo.Schema.Task do
     field :labels, {:array, :string}
     field :status, :string, default: "open"
     field :is_recurring?, :boolean, default: false
+    field :inserted_at, :utc_datetime
+    field :updated_at, :utc_datetime
   end
 
   def create_changeset(task, params \\ %{}) do
@@ -21,9 +24,9 @@ defmodule Todo.Schema.Task do
   end
 
   def create(params) do
-    Task
+    %__MODULE__{}
     |> create_changeset(params)
-    |> Todo.Repo.insert()
+    |> Repo.insert()
   end
 
   def get_all(), do: Repo.all(Task)
@@ -31,16 +34,31 @@ defmodule Todo.Schema.Task do
   def get(id) when is_integer(id), do: Repo.get_by(Task, id: id)
 
   def get_by_priority(priority) do
-    Task
+    %__MODULE__{}
     |> where([t], t.priority == ^priority)
     |> order_by([t], [desc: t.due_date])
+    |> Repo.all()
   end
 
   def get_by_label(label) when is_binary(label), do: get_by_label([label])
 
   def get_by_label(labels) when is_list(labels) do
-    Task
+    %__MODULE__{}
     |> where([t], fragment("? @> ?", t.labels, ^labels))
     |> order_by([t], [desc: t.due_date])
+    |> Repo.all()
+  end
+
+  def update(%{id: id}, changes) do
+    {:ok, task} = get(id)
+    task = Ecto.Changeset.change(task, changes)
+    case Repo.update task do
+      {:error, changeset} -> {:error, changeset.errors}
+      {:ok, _} = success -> success
+    end
+  end
+
+  def delete(%{id: id}) do
+    Repo.delete(%__MODULE__{}, id)
   end
 end

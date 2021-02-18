@@ -24,8 +24,7 @@ defmodule Todo.Task do
   end
 
   def update_changeset(task, params) do
-    task
-    |> cast(params, [:title, :description, :due_date, :priority, :labels, :status, :is_recurring?])
+    cast(task, params, [:title, :description, :due_date, :priority, :labels, :status, :is_recurring?])
   end
 
   def create(params) do
@@ -36,7 +35,7 @@ defmodule Todo.Task do
 
   def get_all(), do: Repo.all(__MODULE__)
 
-  def get(id) when is_integer(id), do: Repo.get_by(__MODULE__, id: id)
+  def get(task), do: Repo.get_by(__MODULE__, id: task.id)
 
   def get_by_priority(priority) do
     __MODULE__
@@ -55,7 +54,7 @@ defmodule Todo.Task do
   end
 
   def update(task, changes) do
-    task = update_changeset(task, changes)
+    task = Ecto.Changeset.change(task, changes)
 
     case Repo.update(task) do
       {:error, changeset} -> {:error, changeset.errors}
@@ -64,6 +63,6 @@ defmodule Todo.Task do
   end
 
   def delete(task) do
-    Repo.delete(__MODULE__, task)
+    Repo.delete(task)
   end
 end

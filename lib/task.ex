@@ -29,7 +29,7 @@ defmodule Todo.Task do
   end
 
   def create(params) do
-    __MODULE__
+    %__MODULE__{}
     |> create_changeset(params)
     |> Repo.insert()
   end

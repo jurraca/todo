@@ -1,10 +1,13 @@
 defmodule Todo.Task.Core do
-    alias Todo.Schema.Task
+    alias Todo.Task
 
     @priorities %{"low" => 0, "medium" => 1, "high" => 2}
 
     def create(%{title: _title, description: _description, due_date: _due} = params) do
-        Task.create(params)
+        case all_complete?() do
+          true -> Task.create(params)
+          false -> {:error, "Cannot create a new task until you finish incomplete tasks!"}
+        end
     end
 
     def get(task), do: Task.get(task)
@@ -20,7 +23,7 @@ defmodule Todo.Task.Core do
     end
 
     def list_by_priority(priority) do
-       Task.get_by_priority(priority)
+      Task.get_by_priority(priority)
     end
 
     def list_by_label(label) do
@@ -33,9 +36,11 @@ defmodule Todo.Task.Core do
 
     def delete(task), do: Task.delete(task)
 
-    defp sorter(priority) do
-      Map.get(@priorities, priority)
-    end
+    def mark_complete(task), do: Task.update(task, %{status: "complete"})
 
-    # mark complete
+    defp sorter(priority), do: Map.get(@priorities, priority)
+
+    defp all_complete?() do
+      Enum.any?(list(), fn task -> task.status != "complete" end)
+    end
 end

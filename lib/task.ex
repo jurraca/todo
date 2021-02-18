@@ -23,6 +23,11 @@ defmodule Todo.Task do
     |> unique_constraint(:title)
   end
 
+  def update_changeset(task, params) do
+    task
+    |> cast(params, [:title, :description, :due_date, :priority, :labels, :status, :is_recurring?])
+  end
+
   def create(params) do
     __MODULE__
     |> create_changeset(params)
@@ -49,16 +54,16 @@ defmodule Todo.Task do
     |> Repo.all()
   end
 
-  def update(%{id: id}, changes) do
-    {:ok, task} = get(id)
-    task = Ecto.Changeset.change(task, changes)
-    case Repo.update task do
+  def update(task, changes) do
+    task = update_changeset(task, changes)
+
+    case Repo.update(task) do
       {:error, changeset} -> {:error, changeset.errors}
       {:ok, _} = success -> success
     end
   end
 
-  def delete(%{id: id}) do
-    Repo.delete(__MODULE__, id)
+  def delete(task) do
+    Repo.delete(__MODULE__, task)
   end
 end

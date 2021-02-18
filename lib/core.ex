@@ -41,6 +41,6 @@ defmodule Todo.Task.Core do
     defp sorter(priority), do: Map.get(@priorities, priority)
 
     defp all_complete?() do
-      Enum.any?(list(), fn task -> task.status != "complete" end)
+      Enum.all?(list(), fn task -> task.status == "complete" end)
     end
 end

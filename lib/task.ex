@@ -1,7 +1,7 @@
 defmodule Todo.Task do
     alias Todo.Schema.Task
 
-    def create(%{title: title, description: description, due_date: due} = params) do
+    def create(%{title: _title, description: _description, due_date: _due} = params) do
         Task.create(params)
     end
 
@@ -25,8 +25,11 @@ defmodule Todo.Task do
       Task.get_by_label(label)
     end
 
-    # view a task
-    # update
-    # delete
+    def update(task, change_fields) do
+      Task.update(task, change_fields)
+    end
+
+    def delete(task), do: Task.delete(task)
+
     # mark complete
 end

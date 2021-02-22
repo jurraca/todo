@@ -1,47 +1,60 @@
 defmodule Todo.CLI do
-  @behaviour Ratatouille.App
-
-  import Ratatouille.View
-  alias Ratatouille.Constants
+#  @behaviour Ratatouille.App
+#
+#  import Ratatouille.View
+#  alias Ratatouille.Constants
   alias Todo.Task.Core
-  alias Todo.Task
+  alias Todo.{Task, Server}
 
-  # the model will always be a list of Tasks.
-  # the user should be able to key up and down through the tasks and select them, in order to modify them.
-  def init(_context), do: Core.list()
+  @commands %{
+    "quit" => "Quits the app.",
+    "list" => "List all tasks.",
+    "new" => "Create a new task."
+  }
 
-  def update(model, msg) do
-    case msg do
-      {:event, %{ch: ?q}} -> Todo.Application.stop(:ok)
-      #{:event, %{ch: ?-}} -> model - 1
-      _ -> model
-    end
+  def main(_args) do
+    IO.puts("Loaded.")
+    execute_cmd("list")
+    recv_cmd()
   end
 
-  def render(model) do
-    view do
-      panel title: "Tasks v0.1" do
-        panel title: "Your Tasks" do
-          table do
-            table_row do
-              table_cell(content: "Title")
-              table_cell(content: "Description")
-              table_cell(content: "Status")
-              table_cell(content: "Due Date")
-            end
-            Enum.map(model, fn task -> render_row(task) end)
-          end
-        end
-      end
-    end
+  defp recv_cmd() do
+    IO.gets("\n> ")
+    |> String.trim
+    |> String.downcase
+    |> execute_cmd()
+
+    recv_cmd()
   end
 
-  defp render_row(%Task{} = task) do
-    table_row do
-        table_cell(content: task.title)
-        table_cell(content: task.description)
-        table_cell(content: task.status)
-        table_cell(content: task.priority)
-    end
+  defp execute_cmd("quit") do
+    IO.puts("Closing. Go forth and conquer.")
+    Server.quit()
   end
+
+  defp execute_cmd("list") do
+    Server.list_tasks()
+    |> Enum.map(fn task -> render_task(task) end)
+  end
+
+  defp render_task(task) do
+    ["\n Task: ", task.title, " - due: ", format_date(task.due_date),
+    "\n -> Desc: ", task.description,
+    "\n -> Status: ", String.upcase(task.status),
+    "\n -> Labels: ", format_labels(task.labels),
+    "\n -> Priority: ", String.upcase(task.priority)
+  ]
+    |> IO.puts()
+  end
+
+  defp format_date(date) do
+    date
+    |> DateTime.to_string()
+    |> String.split()
+    |> Enum.at(0)
+  end
+
+  defp format_labels(nil), do: ""
+
+  defp format_labels(labels), do: Enum.join(labels, ", ")
 end

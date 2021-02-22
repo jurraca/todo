@@ -11,7 +11,7 @@ defmodule Todo.Server do
     end
 
     def quit() do
-      GenServer.stop(Boundary, :shutdown)
+      System.stop(0)
     end
 
     @impl true

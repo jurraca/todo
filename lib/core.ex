@@ -22,6 +22,16 @@ defmodule Todo.Task.Core do
       Enum.sort_by(tasks, &(sorter(&1.priority)), order)
     end
 
+    def filter_priority(tasks, priority) do
+      p = String.downcase(priority)
+      Enum.filter(tasks, fn t -> t.priority == p end)
+    end
+
+    def filter_label(tasks, label) do
+      l = String.downcase(label)
+      Enum.filter(tasks, fn t -> l in t.labels end )
+    end
+
     def list_by_priority(priority) do
       Task.get_by_priority(priority)
     end

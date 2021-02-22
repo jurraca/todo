@@ -39,8 +39,44 @@ defmodule Todo.CLI do
     |> Enum.map(fn task -> render_task(task) end)
   end
 
+  defp execute_cmd("list priority:asc") do
+    execute_cmd("list priority", :asc)
+  end
+
+  defp execute_cmd("list priority:desc") do
+    execute_cmd("list priority", :desc)
+  end
+
+  defp execute_cmd("list priority", order) do
+    order
+    |> Server.sort_tasks_by_priority()
+    |> Enum.map(fn task -> render_task(task) end)
+  end
+
+  defp execute_cmd("list due:asc") do
+    execute_cmd("list due", :asc)
+  end
+
+  defp execute_cmd("list due:desc") do
+    execute_cmd("list due", :desc)
+  end
+
+  defp execute_cmd("list due", order) do
+    order
+    |> Server.sort_tasks_by_date()
+    |> Enum.map(fn task -> render_task(task) end)
+  end
+
+  defp execute_cmd("list priority " <> arg) do
+    Server.list_by_priority(arg)
+  end
+
+  defp execute_cmd("list label " <> arg) do
+    Server.list_by_label(arg)
+  end
+
   defp render_task(task) do
-    ["\n Task: ", task.title, " - due: ", format_date(task.due_date),
+    ["\nTask: ", task.title, " - due: ", format_date(task.due_date),
     "\n -> Desc: ", task.description,
     "\n -> Status: ", String.upcase(task.status),
     "\n -> Labels: ", format_labels(task.labels),

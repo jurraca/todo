@@ -1,10 +1,8 @@
 defmodule Todo.CLI do
-#  @behaviour Ratatouille.App
-#
-#  import Ratatouille.View
-#  alias Ratatouille.Constants
-  alias Todo.Task.Core
-  alias Todo.{Task, Server}
+  @moduledoc """
+  CLI commands for the Todo app.
+  """
+  alias Todo.Server
 
   @commands %{
     "quit" => "Quits the app.",

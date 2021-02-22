@@ -9,7 +9,7 @@ defmodule Todo.Task do
     field :description, :string
     field :due_date, :utc_datetime
     field :priority, :string, default: "low"
-    field :labels, {:array, :string}
+    field :labels, {:array, :string}, default: []
     field :status, :string, default: "open"
     field :is_recurring?, :boolean, default: false
     field :inserted_at, :utc_datetime

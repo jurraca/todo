@@ -7,7 +7,8 @@ defmodule Todo.MixProject do
       version: "0.1.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      escript: escript()
     ]
   end
 
@@ -24,7 +25,12 @@ defmodule Todo.MixProject do
     [
       {:ecto, "~> 3.5.7"},
       {:ecto_sql, "~> 3.5.4"},
-      {:postgrex, ">=0.0.0"}
+      {:postgrex, ">=0.0.0"},
+      {:ratatouille, "~> 0.5.0"}
     ]
+  end
+
+  defp escript do
+    [main_module: Todo.CLI]
   end
 end

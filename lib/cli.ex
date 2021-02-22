@@ -27,6 +27,8 @@ defmodule Todo.CLI do
     recv_cmd()
   end
 
+  defp execute_cmd(""), do: nil
+
   defp execute_cmd("quit") do
     IO.puts("Closing. Go forth and conquer.")
     Server.quit()

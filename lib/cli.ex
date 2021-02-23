@@ -65,12 +65,16 @@ defmodule Todo.CLI do
     |> Enum.map(fn task -> render_task(task) end)
   end
 
-  defp execute_cmd("list priority " <> arg) do
-    Server.list_by_priority(arg)
+  defp execute_cmd("list priority " <> priority) do
+    priority
+    |> Server.list_by_priority()
+    |> Enum.map(fn task -> render_task(task) end)
   end
 
-  defp execute_cmd("list label " <> arg) do
-    Server.list_by_label(arg)
+  defp execute_cmd("list label " <> label) do
+    label
+    |> Server.list_by_label()
+    |> Enum.map(fn task -> render_task(task) end)
   end
 
   defp render_task(task) do

@@ -5,9 +5,17 @@ defmodule Todo.CLI do
   alias Todo.Server
 
   @commands %{
-    "quit" => "Quits the app.",
+    "help" => "Launch this help menu.",
     "list" => "List all tasks.",
-    "new" => "Create a new task."
+    "quit" => "Quits the app.",
+    "new" => "Create a new task.
+        \n      Syntax: new --title {title} --desc {description} --due {date}
+        \n      The title, description, and due date (in the YYYY-MM-DD format) fields are required upon creation.
+        \n      You can optionally pass one or more labels, and a priority (low, medium, high).\n ",
+    "update" => "Update an existing task. Reference the task by the provided ID. You may update any available field, except the ID.
+        \n      Syntax: update {ID} --{field} {updated value}
+        \n      Example: update 9 --due 2021-12-31. \n",
+    "complete" => "Mark a given task as complete. Syntax: complete {ID}"
   }
 
   def main(_args) do
@@ -26,6 +34,12 @@ defmodule Todo.CLI do
   end
 
   defp execute_cmd(""), do: nil
+
+  defp execute_cmd("help") do
+    @commands
+    |> Enum.map(fn { k, v } -> "\n " <> k <> " -> " <> v end)
+    |> IO.puts()
+  end
 
   defp execute_cmd("quit") do
     IO.puts("Closing. Go forth and conquer.")

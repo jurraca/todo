@@ -35,7 +35,7 @@ defmodule Todo.Task do
 
   def get_all(), do: Repo.all(__MODULE__)
 
-  def get(task), do: Repo.get_by(__MODULE__, id: task.id)
+  def get_by_id(id), do: Repo.get_by(__MODULE__, id: id)
 
   def get_by_priority(priority) do
     __MODULE__
@@ -62,7 +62,5 @@ defmodule Todo.Task do
     end
   end
 
-  def delete(task) do
-    Repo.delete(task)
-  end
+  def delete(task), do: Repo.delete(task)
 end

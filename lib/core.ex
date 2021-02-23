@@ -10,8 +10,6 @@ defmodule Todo.Task.Core do
         end
     end
 
-    def get(task), do: Task.get(task)
-
     def list(), do: Task.get_all()
 
     def sort_list(tasks, :due_date, order) when order in [:desc, :asc] do
@@ -40,11 +38,25 @@ defmodule Todo.Task.Core do
       Task.get_by_label(label)
     end
 
-    def update(task, change_fields) do
-      Task.update(task, change_fields)
+    def new(params) do
+      params
+      |> handle_params()
+      |> Task.create()
     end
 
-    def delete(task), do: Task.delete(task)
+    def update(params) do
+      [id, params] = String.split(params, " ", parts: 2)
+      id
+      |> String.to_integer()
+      |> Task.get_by_id()
+      |> Task.update(handle_params(params))
+    end
+
+    def delete(id) do
+      id
+      |> Task.get_by_id()
+      |> Task.delete()
+    end
 
     def mark_complete(task), do: Task.update(task, %{status: "complete"})
 
@@ -53,4 +65,54 @@ defmodule Todo.Task.Core do
     defp all_complete?() do
       Enum.all?(list(), fn task -> task.status == "complete" end)
     end
+
+    defp handle_params(params) do
+      params
+      |> String.split("--")
+      |> Enum.reduce(%{}, fn x, acc -> handle_fields(x, acc) end)
+    end
+
+    defp handle_fields(pair, acc) do
+      case format_pairs(pair) do
+        {k, v} -> Map.put(acc, k, v)
+        _ -> acc
+      end
+    end
+
+    defp format_pairs(pair) do
+      pair
+        |> String.trim()
+        |> String.split(" ", parts: 2)
+        |> format_input()
+    end
+    defp format_input(["title", value | []]) do
+      {:title, value}
+    end
+
+    defp format_input(["desc", value | _]) do
+      {:description, value}
+    end
+
+    defp format_input(["due", value | _]) do
+      {:ok, dt, 0} = DateTime.from_iso8601(value <> " 00:00:00Z")
+      {:due_date, dt}
+    end
+
+    defp format_input(["labels", value | _]) when is_binary(value) do
+      {:labels, [value]}
+    end
+
+    defp format_input(["labels", value | _]) when is_list(value) do
+      {:labels, value}
+    end
+
+    defp format_input(["priority", value | _]) do
+      {:priority, value}
+    end
+
+    defp format_input(["status", value | _]) do
+      {:status, value}
+    end
+
+    defp format_input([""]), do: nil
 end

@@ -26,6 +26,18 @@ defmodule Todo.Server do
       GenServer.call(Boundary, {:list, :label, label})
     end
 
+    def new_task(params) do
+      GenServer.call(Boundary, {:new, params})
+    end
+
+    def delete_task(id) do
+      GenServer.cast(Boundary, {:delete, id})
+    end
+
+    def update_task(params) do
+      GenServer.cast(Boundary, {:update, params})
+    end
+
     def quit() do
       System.stop(0)
     end
@@ -41,17 +53,44 @@ defmodule Todo.Server do
       {:reply, tasks, tasks}
     end
 
+    @impl true
     def handle_call({:sort, sort_field, order}, _from, tasks) do
       sorted = Core.sort_list(tasks, sort_field, order)
       {:reply, sorted, tasks}
     end
 
+    @impl true
     def handle_call({:list, :priority, priority}, _from, tasks) do
       {:reply, Core.filter_priority(tasks, priority), tasks}
     end
 
+    @impl true
     def handle_call({:list, :label, label}, _from, tasks) do
       {:reply, Core.filter_label(tasks, label), tasks}
+    end
+
+    @impl true
+    def handle_call({:new, params}, _from, _tasks) do
+      case Core.new(params) do
+        {:ok, _} -> {:reply, :ok, Core.list()}
+        {:error, _} -> {:reply, :error, Core.list()}
+      end
+    end
+
+    @impl true
+    def handle_cast({:delete, id}, _tasks) do
+      case Core.delete(id) do
+        {:ok, _} -> :ok
+         {:error, _} -> :error
+      end
+      {:noreply, Core.list()}
+    end
+
+    def handle_cast({:update, params}, tasks) do
+      case Core.update(params) do
+        {:ok, _} -> {:noreply, Core.list()}
+        {:error, _} -> {:noreply, tasks}
+      end
     end
 
     @impl true

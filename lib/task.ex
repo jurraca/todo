@@ -5,15 +5,15 @@ defmodule Todo.Task do
   alias Todo.Repo
 
   schema "tasks" do
-    field :title, :string
-    field :description, :string
-    field :due_date, :utc_datetime
-    field :priority, :string, default: "low"
-    field :labels, {:array, :string}, default: []
-    field :status, :string, default: "open"
-    field :is_recurring?, :boolean, default: false
-    field :inserted_at, :utc_datetime
-    field :updated_at, :utc_datetime
+    field(:title, :string)
+    field(:description, :string)
+    field(:due_date, :utc_datetime)
+    field(:priority, :string, default: "low")
+    field(:labels, {:array, :string}, default: [])
+    field(:status, :string, default: "open")
+    field(:is_recurring?, :boolean, default: false)
+    field(:inserted_at, :utc_datetime)
+    field(:updated_at, :utc_datetime)
   end
 
   def create_changeset(task, params \\ %{}) do
@@ -24,7 +24,15 @@ defmodule Todo.Task do
   end
 
   def update_changeset(task, params) do
-    cast(task, params, [:title, :description, :due_date, :priority, :labels, :status, :is_recurring?])
+    cast(task, params, [
+      :title,
+      :description,
+      :due_date,
+      :priority,
+      :labels,
+      :status,
+      :is_recurring?
+    ])
   end
 
   def create(params) do
@@ -40,7 +48,7 @@ defmodule Todo.Task do
   def get_by_priority(priority) do
     __MODULE__
     |> where([t], t.priority == ^priority)
-    |> order_by([t], [desc: t.due_date])
+    |> order_by([t], desc: t.due_date)
     |> Repo.all()
   end
 
@@ -49,7 +57,7 @@ defmodule Todo.Task do
   def get_by_label(labels) when is_list(labels) do
     __MODULE__
     |> where([t], fragment("? @> ?", t.labels, ^labels))
-    |> order_by([t], [desc: t.due_date])
+    |> order_by([t], desc: t.due_date)
     |> Repo.all()
   end
 

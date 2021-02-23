@@ -1,13 +1,13 @@
 defmodule Todo.Application do
-    use Application
+  use Application
 
-    def start(_type, _args) do
-        children = [
-          Todo.Repo,
-          Todo.Server
-        ]
+  def start(_type, _args) do
+    children = [
+      Todo.Repo,
+      Todo.Server
+    ]
 
-        opts = [strategy: :one_for_one, name: Todo.Supervisor]
-        Supervisor.start_link(children, opts)
-    end
+    opts = [strategy: :one_for_one, name: Todo.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
 end

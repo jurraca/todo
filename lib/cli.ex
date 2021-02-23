@@ -8,11 +8,13 @@ defmodule Todo.CLI do
     "help" => "Launch this help menu.",
     "list" => "List all tasks.",
     "quit" => "Quits the app.",
-    "new" => "Create a new task.
+    "new" =>
+      "Create a new task.
         \n      Syntax: new --title {title} --desc {description} --due {date}
         \n      The title, description, and due date (in the YYYY-MM-DD format) fields are required upon creation.
         \n      You can optionally pass one or more labels, and a priority (low, medium, high).\n ",
-    "update" => "Update an existing task. Reference the task by the provided ID. You may update any available field, except the ID.
+    "update" =>
+      "Update an existing task. Reference the task by the provided ID. You may update any available field, except the ID.
         \n      Syntax: update {ID} --{field} {updated value}
         \n      Example: update 9 --due 2021-12-31. \n",
     "complete" => "Mark a given task as complete. Syntax: complete {ID}"
@@ -26,8 +28,8 @@ defmodule Todo.CLI do
 
   defp recv_cmd() do
     IO.gets("\n> ")
-    |> String.trim
-    |> String.downcase
+    |> String.trim()
+    |> String.downcase()
     |> execute_cmd()
 
     recv_cmd()
@@ -37,7 +39,7 @@ defmodule Todo.CLI do
 
   defp execute_cmd("help") do
     @commands
-    |> Enum.map(fn { k, v } -> "\n " <> k <> " -> " <> v end)
+    |> Enum.map(fn {k, v} -> "\n " <> k <> " -> " <> v end)
     |> IO.puts()
   end
 
@@ -116,15 +118,23 @@ defmodule Todo.CLI do
     |> Enum.map(fn task -> render_task(task) end)
   end
 
-
   defp render_task(task) do
-    ["\nTask: ", task.title, " - due: ", format_date(task.due_date),
-    "\n -> Desc: ", task.description,
-    "\n -> Status: ", String.upcase(task.status),
-    "\n -> Labels: ", format_labels(task.labels),
-    "\n -> Priority: ", String.upcase(task.priority),
-    "\n -> ID: ", Integer.to_string(task.id)
-  ]
+    [
+      "\nTask: ",
+      task.title,
+      " - due: ",
+      format_date(task.due_date),
+      "\n -> Desc: ",
+      task.description,
+      "\n -> Status: ",
+      String.upcase(task.status),
+      "\n -> Labels: ",
+      format_labels(task.labels),
+      "\n -> Priority: ",
+      String.upcase(task.priority),
+      "\n -> ID: ",
+      Integer.to_string(task.id)
+    ]
     |> IO.puts()
   end
 

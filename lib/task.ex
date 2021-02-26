@@ -61,7 +61,7 @@ defmodule Todo.Task do
     |> Repo.all()
   end
 
-  def update(nil, changes), do: {:error, :not_found}
+  def update(nil, _), do: {:error, :not_found}
 
   def update(task, changes) do
     task = Ecto.Changeset.change(task, changes)

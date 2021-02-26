@@ -1,21 +1,5 @@
 # Todo
 
-**TODO: Add description**
+A CLI todo app. Clone the repo, run `mix escript.build` to generate an executable. 
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `todo` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:todo, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/todo](https://hexdocs.pm/todo).
-
+Run that executable with `./todo`, which drops you into a CLI. 

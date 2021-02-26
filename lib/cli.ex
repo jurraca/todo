@@ -1,6 +1,8 @@
 defmodule Todo.CLI do
   @moduledoc """
   CLI commands for the Todo app.
+
+  Running the script drops the user in a cli to interact with our application. A list of available commands can printed with "help".
   """
   alias Todo.Server
 

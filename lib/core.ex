@@ -1,4 +1,8 @@
 defmodule Todo.Task.Core do
+  @moduledoc """
+  Core functions for our Todo list. Either takes in the GenServer tasks state or delegates to the Task module for DB requests.
+  """
+
   alias Todo.Task
 
   @priorities %{"low" => 0, "medium" => 1, "high" => 2}

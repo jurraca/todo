@@ -1,4 +1,7 @@
 defmodule Todo.Server do
+  @moduledoc """
+  Boundary endpoints for our application, with a public API.
+  """
   use GenServer
   alias Todo.Task.Core
 

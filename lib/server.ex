@@ -84,7 +84,7 @@ defmodule Todo.Server do
   def handle_cast({:delete, id}, _tasks) do
     case Core.delete(id) do
       {:ok, _} -> :ok
-      {:error, _} -> :error
+      {:error, reason} -> reason
     end
 
     {:noreply, Core.list()}

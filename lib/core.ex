@@ -91,7 +91,7 @@ defmodule Todo.Task.Core do
     |> format_input()
   end
 
-  defp format_input(["title", value | []]) do
+  defp format_input(["title", value | _]) do
     {:title, value}
   end
 
